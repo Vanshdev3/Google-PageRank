@@ -1,0 +1,23 @@
+# Junk / intermediate files
+RecycleBin_Temp/
+poster/
+create_comprehensive_ppt.py
+PageRank_Project_Complete.zip
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
