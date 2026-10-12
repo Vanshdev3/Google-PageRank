@@ -1,0 +1,122 @@
+================================================================================
+           GOOGLE PAGERANK ALGORITHM - LINEAR ALGEBRA PROJECT
+                       HOW TO RUN & PRESENTATION GUIDE
+================================================================================
+
+This project demonstrates the mathematics behind Google's PageRank algorithm
+(Linear Algebra Unit 2: Matrices, Markov Chains, Eigenvalues & Eigenvectors).
+
+It includes:
+  1. A Python terminal script for step-by-step matrix calculation.
+  2. An interactive browser-based simulator with live canvas visualization.
+  3. A 16:9 presentation slide deck (PageRank_Pro_Presentation.pptx).
+  4. Complete mathematical documentation and reference screenshots.
+
+--------------------------------------------------------------------------------
+PREREQUISITES
+--------------------------------------------------------------------------------
+1. Python 3.8 or higher installed on your computer.
+2. NumPy library installed.
+   To install NumPy, open your terminal (PowerShell, Command Prompt, or bash) and run:
+       pip install numpy
+
+3. Any modern web browser (Google Chrome, Microsoft Edge, Firefox, Safari).
+
+--------------------------------------------------------------------------------
+METHOD 1: RUNNING THE PYTHON TERMINAL DEMO (pagerank_demo.py)
+--------------------------------------------------------------------------------
+The Python script calculates all matrix stages and proves convergence:
+  - Step 1: Adjacency Matrix (A)
+  - Step 2: Column-Stochastic Transition Matrix (S)
+  - Step 3: Google Matrix (M) with Damping Factor d = 0.85
+  - Step 4: Eigenvalues and Principal Eigenvector via np.linalg.eig()
+  - Step 5: Iterative verification via Power Iteration (v_(k+1) = M * v_k)
+
+HOW TO RUN:
+1. Open a terminal / command prompt.
+2. Navigate to this project folder:
+       cd "path/to/folder"
+3. Run:
+       python pagerank_demo.py
+
+OPTIONS INSIDE THE SCRIPT:
+Option 1: Default 4-Node Benchmark (Recommended for demos)
+   - Press '1' (or simply press Enter).
+   - Demonstrates the benchmark web: CNN, Yahoo, TechCrunch, and Amazon.
+   - Shows the exact math and verifies CNN as the top node at 42.92%.
+   - Verifies that Power Iteration converges in 32 iterations and matches
+     the principal eigenvector to 12 decimal places.
+
+Option 2: Custom Adjacency Matrix
+   - Press '2' and hit Enter.
+   - Enter the number of pages (e.g., 3).
+   - Enter each row of 0s and 1s separated by spaces.
+   - Example 3-node matrix:
+         Row 1: 0 1 1
+         Row 2: 1 0 0
+         Row 3: 0 1 0
+   - The script will compute the custom PageRank distribution automatically.
+
+--------------------------------------------------------------------------------
+METHOD 2: RUNNING THE INTERACTIVE WEB SIMULATOR (index.html)
+--------------------------------------------------------------------------------
+The web simulator is a self-contained application with an interactive canvas
+that allows you to visually add nodes, draw hyperlinks, view matrices, and watch
+PageRank update in real time.
+
+EASIEST WAY TO RUN:
+- Simply double-click the "index.html" file to open it in your browser.
+
+ALTERNATIVE (LOCAL SERVER):
+1. In your terminal inside this folder, run:
+       python -m http.server 8080
+2. Open your web browser and go to:
+       http://localhost:8080
+
+FEATURES TO DEMO:
+- Dynamic Graph: Drag nodes across the screen.
+- Create Links: Click and drag between nodes to add directed hyperlinks.
+- Live Matrices: Toggle the matrix panel to see the Adjacency, Stochastic,
+  and Google matrices update in real time.
+- Damping Factor Slider: Adjust d from 0.00 to 1.00 to demonstrate the effect
+  of the random surfer teleportation model.
+- Step-by-Step Power Iteration: Step through individual iterations to watch
+  the probability vector converge.
+
+--------------------------------------------------------------------------------
+METHOD 3: PRESENTATION SLIDES (PageRank_Pro_Presentation.pptx)
+--------------------------------------------------------------------------------
+- Open "PageRank_Pro_Presentation.pptx" in Microsoft PowerPoint, Google Slides,
+  or LibreOffice Impress.
+- The deck is formatted in 16:9 widescreen with a dark mode Google aesthetic.
+- Use "Presentation_Instructions.md" for a slide-by-slide talking guide.
+
+--------------------------------------------------------------------------------
+FILE INDEX & DIRECTORY OVERVIEW
+--------------------------------------------------------------------------------
+- pagerank_demo.py             : Core Python numerical script (NumPy).
+- index.html                   : Interactive browser graph & matrix simulator.
+- PageRank_Pro_Presentation.pptx: Complete 16:9 presentation slide deck.
+- README.md                    : GitHub-formatted documentation with ASCII diagrams.
+- HOW_TO_RUN.txt               : Quick start guide (this file).
+- Explanation_and_Notes.md     : Comprehensive mathematical theory & derivations.
+- Presentation_Instructions.md : Step-by-step oral presentation walkthrough.
+- terminal_screenshot.png      : Reference image of successful Python execution.
+- website_screenshot.png       : Reference image of the interactive web simulator.
+- final_cover.png              : High-resolution cover artwork for the project.
+
+--------------------------------------------------------------------------------
+TROUBLESHOOTING
+--------------------------------------------------------------------------------
+Q: "No module named numpy" error in Python.
+A: Run: pip install numpy
+
+Q: "python is not recognized as an internal or external command".
+A: Run using "py pagerank_demo.py" or ensure Python is added to your system PATH.
+
+Q: Port 8080 is in use when starting the web server.
+A: Run on another port, for example:
+       python -m http.server 8000
+   and navigate to http://localhost:8000 in your browser.
+
+================================================================================

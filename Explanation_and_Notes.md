@@ -6,99 +6,101 @@ This was fundamentally flawed. Spammers realized they could just hide the word "
 
 ### The Google Solution
 Larry Page and Sergey Brin (founders of Google) solved this using **Linear Algebra**.
-They realized that a hyperlink is a vote of confidence. If Apple.com links to CNN.com, Apple is saying "I trust CNN". Furthermore, a link from a highly trusted site (like Apple) should count for more than a link from a random blog.
+They realized that a hyperlink is a vote of confidence. If Yahoo links to CNN, Yahoo is saying "I trust CNN". Furthermore, a link from a highly trusted site should count for more than a link from an obscure blog.
 
-This isn't just a simple counting problem. This is a recursive mathematical problem that is perfectly solved using **Matrices and Eigenvectors**.
+This is not a simple counting problem. This is a recursive mathematical system solved via **Markov Chains, Stochastic Matrices, and Eigenvectors**.
 
 ---
 
 ## 2. The Mathematics (Step-by-Step Implementation)
 
-Let's imagine a tiny internet with only 4 websites: **Apple**, **Bing**, **CNN**, and **Disney**.
-Assume the following links exist:
-- Apple links to Bing and CNN.
-- Bing links to CNN.
-- CNN links to Apple and Disney.
-- Disney links to CNN.
+Let's consider a benchmark network with 4 web nodes: **CNN**, **Yahoo**, **TechCrunch**, and **Amazon**.
 
-How do we find which page is the most important using Linear Algebra?
+Assume the following hyperlink structure:
+- **CNN** links to **Yahoo** and **TechCrunch**.
+- **Yahoo** links to **CNN**.
+- **TechCrunch** links to **CNN** and **Amazon**.
+- **Amazon** links to **CNN**.
+
+How do we determine the structural authority of each page using Linear Algebra?
 
 ### Step 1: The Adjacency Matrix ($A$)
-First, we construct a square matrix (4x4 in this case) representing the raw structure of the web. 
-- **Columns** represent where the link is coming *From*.
-- **Rows** represent where the link is going *To*.
-
-If Apple (Column 1) links to Bing (Row 2), we put a `1`. Otherwise, `0`.
-
-```text
-                 Apple       Bing        CNN     Disney
-     Apple           0          0          1          0
-      Bing           1          0          0          0
-       CNN           1          1          0          1
-    Disney           0          0          1          0
-```
-
-### Step 2: The Stochastic Matrix ($S$)
-An Adjacency Matrix just tells us if a link exists. But we need probabilities. 
-If Apple links to 2 websites (Bing and CNN), and a user is on Apple.com, there is a **50% chance** they click Bing and a **50% chance** they click CNN.
-To find this matrix, we simply divide each column by the sum of that column (the number of outgoing links).
+First, we construct a square $4 \times 4$ adjacency matrix representing the link graph.
+- **Columns** represent the source page (*From*).
+- **Rows** represent the destination page (*To*).
+- An entry is `1` if a link exists from column $j$ to row $i$, else `0`.
 
 ```text
-                 Apple       Bing        CNN     Disney
-     Apple        0.00       0.00       0.50       0.00
-      Bing        0.50       0.00       0.00       0.00
-       CNN        0.50       1.00       0.00       1.00
-    Disney        0.00       0.00       0.50       0.00
+                 CNN       Yahoo  TechCrunch      Amazon
+       CNN         0           1           1           1
+     Yahoo         1           0           0           0
+TechCrunch         1           0           0           0
+    Amazon         0           0           1           0
 ```
-This is a Markov Chain probability matrix. The sum of every column is exactly 1.0 (100%).
 
-### Step 3: The Google Matrix ($G$)
-In the real world, users don't *only* click links. Sometimes they get bored, open a new tab, and randomly type a new URL. This is called the "Random Surfer Model".
-Google uses a **Damping Factor ($d$)** of usually 0.85 (85%). 
-This means there is an 85% chance the user clicks a link (using Matrix S), and a 15% chance they randomly teleport anywhere else on the web.
-
-The formula for the Google Matrix is:
-$$G = 0.85 \cdot S + 0.15 \cdot \frac{1}{N} \cdot E$$
-*(Where N is the number of pages, and E is a matrix of all 1s).*
+### Step 2: The Stochastic Transition Matrix ($S$)
+An adjacency matrix only records connectivity. To model web navigation probabilities, we normalize each column by the total number of outgoing links (the column sum).
+If CNN links to 2 websites (Yahoo and TechCrunch), a user on CNN has a **50% probability** of navigating to Yahoo and **50%** to TechCrunch.
 
 ```text
-                 Apple       Bing        CNN     Disney
-     Apple        0.04       0.04       0.46       0.04
-      Bing        0.46       0.04       0.04       0.04
-       CNN        0.46       0.89       0.04       0.89
-    Disney        0.04       0.04       0.46       0.04
+                 CNN       Yahoo  TechCrunch      Amazon
+       CNN      0.00        1.00        0.50        1.00
+     Yahoo      0.50        0.00        0.00        0.00
+TechCrunch      0.50        0.00        0.00        0.00
+    Amazon      0.00        0.00        0.50        0.00
 ```
+Every column sum equals exactly $1.0$, satisfying the requirement of a column-stochastic Markov transition matrix.
 
-### Step 4: The Eigenvector (The Final PageRank!)
-Now for the magic. We want to find the steady-state vector, which represents the long-term probability of a user landing on any specific page.
-Mathematically, this equation is:
-$$G \vec{v} = \lambda \vec{v}$$
-Where $\lambda$ is the Eigenvalue, and $\vec{v}$ is the Eigenvector.
+### Step 3: The Google Matrix ($M$)
+In practice, web users do not exclusively follow hyperlinks. Occasionally, a user teleports by typing a completely new address into the browser bar. This behavior is captured by the **Random Surfer Model**.
 
-Because $G$ is a stochastic matrix, its largest Eigenvalue is **exactly 1**.
-Therefore, we just need to find the **Eigenvector corresponding to $\lambda = 1$**.
+Google applies a **Damping Factor ($d$)**, typically set to $0.85$ (85%).
+This implies an 85% probability that the surfer follows an outgoing link, and a 15% probability ($1 - d = 0.15$) that they teleport uniformly to any page in the network.
 
-Using `np.linalg.eig(G)` in Python, we find that Eigenvector, normalize it so it adds up to 100%, and get our final PageRank scores:
+The Google Matrix is defined as:
+$$M = d \cdot S + \frac{1 - d}{N} \cdot E$$
+*(where $N = 4$ is the number of nodes, and $E$ is an $N \times N$ matrix of all ones).*
 
-- **CNN**: 42.92%
-- **Apple**: 21.99%
-- **Disney**: 21.99%
-- **Bing**: 13.10%
+```text
+                 CNN       Yahoo  TechCrunch      Amazon
+       CNN    0.0375      0.8875      0.4625      0.8875
+     Yahoo    0.4625      0.0375      0.0375      0.0375
+TechCrunch    0.4625      0.0375      0.0375      0.0375
+    Amazon    0.0375      0.0375      0.4625      0.0375
+```
+By adding teleportation, $M$ is guaranteed to be **irreducible** and **primitive**, ensuring the existence of a unique positive stationary distribution (Perron-Frobenius theorem).
 
-CNN receives links from Apple, Bing, *and* Disney, making it the most central node in this tiny internet! Apple and Disney tie exactly, because each receives exactly half of CNN's vote (CNN splits its importance between them).
-(Other eigenvalues of G: 0, -0.425, -0.425 — all smaller than 1 in magnitude, which is why Power Iteration converges.)
+### Step 4: The Eigenvector (PageRank Calculation)
+The long-term stationary probability distribution satisfies:
+$$M \mathbf{v} = \lambda \mathbf{v}$$
+where $\lambda$ is the eigenvalue, and $\mathbf{v}$ is the stationary eigenvector.
+
+Because $M$ is column-stochastic, its dominant eigenvalue is strictly $\lambda = 1$. The corresponding principal eigenvector, normalized such that $\sum v_i = 1$, yields the final PageRank scores:
+
+- **CNN**: **42.92%**
+- **Yahoo**: **21.99%**
+- **TechCrunch**: **21.99%**
+- **Amazon**: **13.10%**
+
+**Analysis:**
+- **CNN** receives incoming links from Yahoo, TechCrunch, and Amazon, establishing it as the most authoritative node in this network.
+- **Yahoo** and **TechCrunch** tie at 21.99% because CNN evenly distributes its high voting authority between them.
+- **Amazon** receives only half of TechCrunch's outlinks and has no other inlinks, ranking at 13.10%.
+
+The non-dominant eigenvalues of $M$ are $\lambda \in \{ -0.425, -0.425, 0.0 \}$. Since $|\lambda_i| < 1$ for all $i \ge 2$, iterative matrix multiplication (**Power Iteration**) is guaranteed to converge rapidly to the principal eigenvector.
 
 ---
 
 ## 3. Technology Used in this Project
 
-1. **Python Backend (`pagerank_demo.py`)**:
-   - Uses `numpy` (`np.linalg.eig`) to mathematically construct the matrices and calculate the Eigenvalues and Eigenvectors identically to how it is taught in Unit 2 of the syllabus.
-   
-2. **Interactive UI (`index.html`)**:
-   - Built with Vanilla HTML5 Canvas, CSS (AMOLED Dark Mode), and JavaScript.
-   - Calculates the exact same math in real-time using Power Iteration.
-   - Allows users to dynamically add/remove nodes and draw edges, making the abstract math immediately visible.
+1. **Python CLI Application (`pagerank_demo.py`)**:
+   - Uses `numpy` (`np.linalg.eig`) to construct all matrices and compute the analytical eigenvalues and eigenvectors.
+   - Includes numerical verification via Power Iteration ($v^{(k+1)} = M v^{(k)}$), showing convergence in 32 iterations.
 
-3. **Presentation Generation (`create_comprehensive_ppt.py`)**:
-   - Uses `python-pptx` to programmatically generate an aesthetically pleasing, Google-themed dark mode presentation explaining the math.
+2. **Interactive Web Simulator (`index.html`)**:
+   - Built with Vanilla HTML5 Canvas, modern AMOLED dark mode CSS, and JavaScript.
+   - Computes PageRank dynamically in real time as nodes and edges are added, moved, or deleted.
+   - Includes interactive controls for damping factors, live step-by-step matrix visualization, and convergence traces.
+
+3. **Presentation Generation (`PageRank_Pro_Presentation.pptx`)**:
+   - Professionally formatted 16:9 slides with Google aesthetics detailing the mathematics, applications, and demonstration.

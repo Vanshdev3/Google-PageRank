@@ -23,6 +23,7 @@ google-pagerank/
 |
 |-- pagerank_demo.py               Core Python implementation (NumPy)
 |-- index.html                     Interactive web simulator (no dependencies)
+|-- HOW_TO_RUN.txt                 Quick terminal & execution guide
 |-- Explanation_and_Notes.md       Full mathematical walkthrough
 |-- Presentation_Instructions.md  Demo guide for presenting
 |-- PageRank_Pro_Presentation.pptx Final slide deck
