@@ -57,7 +57,7 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(10, 10, 14, 0.82);
+      background: rgba(10, 10, 14, 0.85);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
@@ -254,12 +254,12 @@
       left: 12px;
       display: flex;
       gap: 6px;
-      background: rgba(18, 18, 22, 0.75);
+      background: rgba(18, 18, 22, 0.85);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       padding: 5px;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       z-index: 10;
       box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
@@ -280,7 +280,7 @@
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
     button.tool-btn:hover {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.08);
       color: var(--text);
     }
     button.tool-btn.active {
@@ -299,7 +299,7 @@
       z-index: 10;
     }
     .badge {
-      background: rgba(18, 18, 22, 0.75);
+      background: rgba(18, 18, 22, 0.8);
       backdrop-filter: blur(8px);
       border: 1px solid var(--border);
       padding: 4px 10px;
@@ -316,12 +316,12 @@
       left: 12px;
       right: 12px;
       text-align: center;
-      background: rgba(14, 14, 18, 0.85);
+      background: rgba(14, 14, 18, 0.9);
       backdrop-filter: blur(8px);
-      padding: 6px 14px;
+      padding: 7px 14px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       color: var(--g-yellow);
       pointer-events: none;
       display: flex;
@@ -543,69 +543,50 @@
     .info-card strong { color: var(--text); }
 
     /* ============================================================== */
-    /* HALFTONE WORDMARK FOOTER (Interactive Spring Physics Canvas)  */
+    /* CLEAN TWO-TIER FOOTER ARCHITECTURE                             */
     /* ============================================================== */
-    .hwf-footer-wrap {
-      margin-top: 4rem;
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      isolation: isolate;
-      background: #060608;
+    footer.app-footer {
+      margin-top: 5rem;
+      background: #050507;
       border-top: 1px solid var(--border);
     }
 
-    .hwf-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-      pointer-events: auto;
-    }
-
-    .hwf-content {
-      position: relative;
-      z-index: 2;
+    /* Tier 1: Clean Links and Credits (Placed ON TOP) */
+    .footer-top {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 2.5rem 2rem 5rem;
+      padding: 3rem 2rem 2.5rem;
       display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr 1fr;
-      gap: 2rem;
+      grid-template-columns: 1.6fr 1fr 1fr 1fr;
+      gap: 2.5rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
+      font-size: 11.5px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      line-height: 1.7;
-      pointer-events: none; /* Let canvas capture spring mouse events */
+      line-height: 1.8;
     }
 
-    .hwf-interactive-items {
-      pointer-events: auto; /* Re-enable for links and buttons */
-    }
-
-    .hwf-brand h4 {
-      font-size: 13px;
+    .footer-brand h4 {
+      font-size: 14px;
       font-weight: 700;
       color: var(--text);
       letter-spacing: 0.15em;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .hwf-brand p {
+    .footer-brand p {
       color: var(--text-dim);
-      font-size: 10.5px;
+      font-size: 11px;
     }
 
-    .hwf-col h5 {
+    .footer-col h5 {
       color: var(--text-dim);
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    .hwf-col ul {
+    .footer-col ul {
       list-style: none;
     }
-    .hwf-col a, .hwf-up-btn {
+    .footer-col a, .footer-up-btn {
       color: var(--text-muted);
       text-decoration: none;
       transition: color 0.2s, transform 0.2s;
@@ -618,43 +599,66 @@
       letter-spacing: inherit;
       text-transform: inherit;
     }
-    .hwf-col a:hover, .hwf-up-btn:hover {
+    .footer-col a:hover, .footer-up-btn:hover {
       color: var(--g-yellow);
-      transform: translateX(2px);
+      transform: translateX(3px);
     }
 
-    .hwf-bottom-bar {
+    /* Tier 2: Dedicated Interactive Halftone Wordmark Stage (DOWN BELOW) */
+    .hwf-stage-container {
       position: relative;
-      z-index: 2;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 1rem 2rem 2.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      width: 100%;
+      height: 290px;
+      background: #040405;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+    }
+
+    .hwf-stage-header {
+      position: absolute;
+      top: 16px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+      pointer-events: none;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 10.5px;
-      letter-spacing: 0.15em;
+      font-size: 11px;
       text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .hwf-badge {
+      background: rgba(253, 214, 99, 0.12);
+      color: var(--g-yellow);
+      border: 1px solid rgba(253, 214, 99, 0.3);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .hwf-stage-hint {
       color: var(--text-dim);
     }
 
-    .hwf-hint-tag {
-      color: var(--g-yellow);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    #hwfCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
     }
 
     @media (max-width: 1080px) {
       .app-layout { grid-template-columns: 1fr; }
-      .hwf-content { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 1.8rem; }
     }
     @media (max-width: 640px) {
       header { flex-direction: column; align-items: flex-start; }
       .header-controls { flex-wrap: wrap; }
-      .hwf-content { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .hwf-stage-header { flex-direction: column; gap: 6px; }
     }
   </style>
 </head>
@@ -708,16 +712,16 @@
           1. Interactive Web Graph
         </h2>
         <div style="font-size: 0.8rem; color: var(--text-muted);">
-          Drag nodes · Draw arrows · Watch math update
+          Drag nodes · Link pages · Watch math update
         </div>
       </div>
 
       <div class="canvas-container" id="canvasWrapper">
         <!-- Floating Canvas Toolbar -->
         <div class="canvas-toolbar">
-          <button id="btnDrag" class="tool-btn active" title="Move nodes">✋ Drag</button>
+          <button id="btnDrag" class="tool-btn active" title="Move nodes around canvas">✋ Drag</button>
           <button id="btnAddNode" class="tool-btn" title="Add new page">➕ Add Page</button>
-          <button id="btnAddEdge" class="tool-btn" title="Click & drag between nodes to connect">↗️ Draw Link</button>
+          <button id="btnAddEdge" class="tool-btn" title="Connect pages with hyperlinks">↗️ Draw Link</button>
           <button id="btnDelete" class="tool-btn" title="Click node to delete">🗑️ Delete</button>
           <button id="btnToggleSurfers" class="tool-btn" title="Toggle animated random surfer flow particles">✨ Surfers: ON</button>
         </div>
@@ -730,7 +734,7 @@
         <canvas id="graphCanvas"></canvas>
         
         <div class="canvas-hint" id="canvasInstructions">
-          Mode: Drag nodes to arrange layout. Click & drag between nodes in "Draw Link" mode.
+          Mode: Drag nodes to arrange layout. Click "Draw Link" to connect pages.
         </div>
       </div>
     </section>
@@ -827,30 +831,29 @@
   </main>
 
   <!-- ============================================================== -->
-  <!-- HALFTONE WORDMARK FOOTER (Interactive Spring Physics Canvas)  -->
+  <!-- CLEAN TWO-TIER FOOTER ARCHITECTURE                             -->
   <!-- ============================================================== -->
-  <footer class="hwf-footer-wrap" id="hwfFooter">
-    <!-- Interactive Dot Canvas -->
-    <canvas class="hwf-canvas" id="hwfCanvas"></canvas>
-
-    <div class="hwf-content">
-      <div class="hwf-brand hwf-interactive-items">
+  <footer class="app-footer">
+    
+    <!-- Tier 1: Clean Links and Info Placed Above -->
+    <div class="footer-top">
+      <div class="footer-brand">
         <h4>Google PageRank Lab</h4>
         <p>© 2026 · Linear Algebra Unit 2 Project</p>
         <p style="margin-top: 6px; color: var(--text-dim);">Eigenvalues · Markov Chains · Power Iteration</p>
       </div>
 
-      <div class="hwf-col hwf-interactive-items">
-        <h5>Pipeline</h5>
+      <div class="footer-col">
+        <h5>Pipeline Steps</h5>
         <ul>
-          <li><a href="#" onclick="switchTab('tab-adj'); return false;">Adjacency Matrix</a></li>
-          <li><a href="#" onclick="switchTab('tab-stoch'); return false;">Stochastic Transition</a></li>
-          <li><a href="#" onclick="switchTab('tab-google'); return false;">Google Matrix</a></li>
+          <li><a href="#" onclick="switchTab('tab-adj'); return false;">Step 1: Adjacency</a></li>
+          <li><a href="#" onclick="switchTab('tab-stoch'); return false;">Step 2: Stochastic</a></li>
+          <li><a href="#" onclick="switchTab('tab-google'); return false;">Step 3: Google Matrix</a></li>
         </ul>
       </div>
 
-      <div class="hwf-col hwf-interactive-items">
-        <h5>Project Files</h5>
+      <div class="footer-col">
+        <h5>Project Documentation</h5>
         <ul>
           <li><a href="pagerank_demo.py" target="_blank">Python Engine</a></li>
           <li><a href="STUDENT_PRESENTATION_CHEATSHEET.md" target="_blank">Math Cheatsheet</a></li>
@@ -858,19 +861,24 @@
         </ul>
       </div>
 
-      <div class="hwf-col hwf-interactive-items">
-        <h5>Actions</h5>
+      <div class="footer-col">
+        <h5>Navigation</h5>
         <ul>
-          <li><button type="button" class="hwf-up-btn" id="btnBackToTop">Back to top ↑</button></li>
+          <li><button type="button" class="footer-up-btn" id="btnBackToTop">Back to top ↑</button></li>
           <li><a href="https://github.com/Vanshdev3/google-pagerank" target="_blank">GitHub Repository ↗</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="hwf-bottom-bar hwf-interactive-items">
-      <span>Interactive Spring Particle Canvas</span>
-      <span class="hwf-hint-tag">✦ Move mouse over footer to displace halftone dots · Click for shockwave</span>
+    <!-- Tier 2: Dedicated Interactive Halftone Wordmark Stage Down Below -->
+    <div class="hwf-stage-container" id="hwfStage">
+      <div class="hwf-stage-header">
+        <span class="hwf-badge">✦ Interactive Halftone Physics</span>
+        <span class="hwf-stage-hint">Move pointer across dots to disperse on springs · Click to launch shockwave</span>
+      </div>
+      <canvas id="hwfCanvas"></canvas>
     </div>
+
   </footer>
 
   <!-- ============================================================== -->
@@ -966,9 +974,18 @@
     }
     window.addEventListener('resize', resizeGraphCanvas);
 
-    // --- 3. GRAPH INTERACTION HANDLING ---
+    // Helper: Find node at point
+    function getNodeAt(x, y) {
+      return nodes.find(n => {
+        const r = (n.currentDynamicRadius || n.radius || 36) + 12;
+        return Math.hypot(n.x - x, n.y - y) <= r;
+      });
+    }
+
+    // --- 3. GRAPH INTERACTION HANDLING (ROBUST LINKING) ---
     let draggedNode = null;
-    let edgeStartNode = null;
+    let selectedSourceNode = null; // Stores first clicked node in ADD_EDGE mode
+    let isMouseDown = false;
     let mousePos = { x: 0, y: 0 };
 
     document.getElementById('btnDrag').onclick = () => setMode('DRAG');
@@ -986,6 +1003,7 @@
 
     function setMode(newMode) {
       mode = newMode;
+      selectedSourceNode = null;
       document.querySelectorAll('.canvas-toolbar button').forEach(b => {
         if (b.id !== 'btnToggleSurfers') b.classList.remove('active');
       });
@@ -1001,14 +1019,13 @@
         canvas.style.cursor = 'crosshair';
       } else if (mode === 'ADD_EDGE') {
         document.getElementById('btnAddEdge').classList.add('active');
-        hintEl.innerText = "Mode: Click and drag from one node to another to create a hyperlink.";
+        hintEl.innerText = "Mode: Click source page, then click target page to link them (or drag between them).";
         canvas.style.cursor = 'pointer';
       } else if (mode === 'DELETE') {
         document.getElementById('btnDelete').classList.add('active');
-        hintEl.innerText = "Mode: Click any node to remove it and all connected hyperlinks.";
+        hintEl.innerText = "Mode: Click any page node to delete it and its hyperlinks.";
         canvas.style.cursor = 'not-allowed';
       }
-      edgeStartNode = null;
     }
 
     // Preset & Damping Listeners
@@ -1028,19 +1045,24 @@
       edges = JSON.parse(JSON.stringify(PRESETS[key].edges));
       nextNodeChar = 65 + nodes.length;
       document.getElementById('presetSelect').value = key;
+      selectedSourceNode = null;
       surferPackets = [];
       calculateMath();
     }
 
-    // Canvas Mouse Events
+    // --- MOUSE & TOUCH EVENT LISTENERS ---
     canvas.addEventListener('mousedown', e => {
       const rect = canvas.getBoundingClientRect();
       const mx = e.clientX - rect.left;
       const my = e.clientY - rect.top;
-      const clicked = nodes.find(n => Math.hypot(n.x - mx, n.y - my) < n.radius);
+      isMouseDown = true;
+      const clicked = getNodeAt(mx, my);
 
       if (mode === 'DRAG') {
-        if (clicked) { draggedNode = clicked; canvas.style.cursor = 'grabbing'; }
+        if (clicked) {
+          draggedNode = clicked;
+          canvas.style.cursor = 'grabbing';
+        }
       } else if (mode === 'ADD_NODE') {
         if (!clicked && nodes.length < 12) {
           const name = String.fromCharCode(nextNodeChar++);
@@ -1051,14 +1073,53 @@
           });
           calculateMath();
         }
-      } else if (mode === 'ADD_EDGE') {
-        if (clicked) edgeStartNode = clicked;
       } else if (mode === 'DELETE') {
         if (clicked) {
           nodes = nodes.filter(n => n.id !== clicked.id);
           edges = edges.filter(ed => ed.from !== clicked.id && ed.to !== clicked.id);
+          selectedSourceNode = null;
           calculateMath();
         }
+      }
+    });
+
+    // Dedicated Click Handler for Link Node (Click-to-Click)
+    canvas.addEventListener('click', e => {
+      if (mode !== 'ADD_EDGE') return;
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const clicked = getNodeAt(mx, my);
+      const hintEl = document.getElementById('canvasInstructions');
+
+      if (!clicked) {
+        // Clicked empty background: cancel selection
+        if (selectedSourceNode) {
+          selectedSourceNode = null;
+          hintEl.innerText = "Deselected. Click a source page to link.";
+        }
+        return;
+      }
+
+      if (!selectedSourceNode) {
+        // First click: Select Source Node
+        selectedSourceNode = clicked;
+        hintEl.innerText = `Selected [${clicked.id}]. Now click destination page to create link!`;
+      } else {
+        // Second click: Target Node
+        if (clicked !== selectedSourceNode) {
+          const exists = edges.some(ed => ed.from === selectedSourceNode.id && ed.to === clicked.id);
+          if (!exists) {
+            edges.push({ from: selectedSourceNode.id, to: clicked.id });
+            calculateMath();
+            hintEl.innerText = `✓ Created link: [${selectedSourceNode.id} → ${clicked.id}]!`;
+          } else {
+            hintEl.innerText = `Link [${selectedSourceNode.id} → ${clicked.id}] already exists!`;
+          }
+        } else {
+          hintEl.innerText = `Deselected [${clicked.id}].`;
+        }
+        selectedSourceNode = null;
       }
     });
 
@@ -1068,46 +1129,38 @@
       mousePos.y = e.clientY - rect.top;
 
       if (mode === 'DRAG' && draggedNode) {
-        draggedNode.x = Math.max(40, Math.min(canvas.width - 40, mousePos.x));
-        draggedNode.y = Math.max(40, Math.min(canvas.height - 40, mousePos.y));
+        draggedNode.x = Math.max(45, Math.min(canvas.width - 45, mousePos.x));
+        draggedNode.y = Math.max(45, Math.min(canvas.height - 45, mousePos.y));
       }
     });
 
     window.addEventListener('mouseup', e => {
+      isMouseDown = false;
       if (mode === 'DRAG') {
         draggedNode = null;
         if (canvas.style.cursor === 'grabbing') canvas.style.cursor = 'grab';
-      } else if (mode === 'ADD_EDGE' && edgeStartNode) {
+      } else if (mode === 'ADD_EDGE') {
+        // Drag-and-release support
         const rect = canvas.getBoundingClientRect();
         const mx = e.clientX - rect.left;
         const my = e.clientY - rect.top;
-        const targetNode = nodes.find(n => Math.hypot(n.x - mx, n.y - my) < n.radius);
+        const targetNode = getNodeAt(mx, my);
 
-        if (targetNode && targetNode !== edgeStartNode) {
-          if (!edges.some(ed => ed.from === edgeStartNode.id && ed.to === targetNode.id)) {
-            edges.push({ from: edgeStartNode.id, to: targetNode.id });
+        if (selectedSourceNode && targetNode && targetNode !== selectedSourceNode) {
+          const exists = edges.some(ed => ed.from === selectedSourceNode.id && ed.to === targetNode.id);
+          if (!exists) {
+            edges.push({ from: selectedSourceNode.id, to: targetNode.id });
             calculateMath();
+            document.getElementById('canvasInstructions').innerText = `✓ Created link: [${selectedSourceNode.id} → ${targetNode.id}]!`;
           }
+          selectedSourceNode = null;
         }
-        edgeStartNode = null;
       }
     });
 
     // --- 4. GRAPH RENDERING LOOP (ANIMATED FLOW PACKETS) ---
     function renderGraphAnimation() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Draw Pending Edge (in ADD_EDGE mode)
-      if (mode === 'ADD_EDGE' && edgeStartNode) {
-        ctx.beginPath();
-        ctx.moveTo(edgeStartNode.x, edgeStartNode.y);
-        ctx.lineTo(mousePos.x, mousePos.y);
-        ctx.strokeStyle = 'rgba(138, 180, 248, 0.7)';
-        ctx.lineWidth = 2.5;
-        ctx.setLineDash([6, 6]);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
 
       // Check reciprocal edges for curved rendering
       const hasReciprocal = (f, t) => edges.some(e => e.from === t && e.to === f);
@@ -1122,9 +1175,20 @@
         }
       });
 
+      // Draw Pending Edge (in ADD_EDGE mode when source is selected)
+      if (mode === 'ADD_EDGE' && selectedSourceNode) {
+        ctx.beginPath();
+        ctx.moveTo(selectedSourceNode.x, selectedSourceNode.y);
+        ctx.lineTo(mousePos.x, mousePos.y);
+        ctx.strokeStyle = '#FDD663';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([8, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
       // Update and Draw Surfer Flow Particles
       if (showSurfers && edges.length > 0) {
-        // Spawn random packets
         if (Math.random() < 0.28 && edges.length > 0) {
           const randEdge = edges[Math.floor(Math.random() * edges.length)];
           surferPackets.push({
@@ -1135,7 +1199,6 @@
           });
         }
 
-        // Draw and advance packets
         for (let i = surferPackets.length - 1; i >= 0; i--) {
           const p = surferPackets[i];
           const n1 = nodes.find(n => n.id === p.from);
@@ -1165,11 +1228,28 @@
       nodes.forEach((n, idx) => {
         const rankRatio = currentV[idx] ? currentV[idx] : (1.0 / nodes.length);
         const dynamicRadius = Math.max(28, Math.min(52, 26 + rankRatio * 50));
+        n.currentDynamicRadius = dynamicRadius;
+
+        const isSelected = (selectedSourceNode === n);
+
+        // Highlight ring if currently selected for linking
+        if (isSelected) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, dynamicRadius + 10, 0, Math.PI * 2);
+          ctx.strokeStyle = '#FDD663';
+          ctx.lineWidth = 3.5;
+          ctx.setLineDash([6, 6]);
+          ctx.shadowColor = '#FDD663';
+          ctx.shadowBlur = 12;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+          ctx.setLineDash([]);
+        }
 
         // Outer Glow Halo
         ctx.beginPath();
         ctx.arc(n.x, n.y, dynamicRadius + 6, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba(n.color, 0.12);
+        ctx.fillStyle = hexToRgba(n.color, 0.14);
         ctx.fill();
 
         // Node Circle Body
@@ -1178,7 +1258,7 @@
         ctx.fillStyle = '#141419';
         ctx.fill();
         ctx.lineWidth = 3.5;
-        ctx.strokeStyle = n.color;
+        ctx.strokeStyle = isSelected ? '#FDD663' : n.color;
         ctx.stroke();
 
         // Node Label
@@ -1205,7 +1285,6 @@
           y: n1.y + (n2.y - n1.y) * t
         };
       }
-      // Quadratic Bezier interpolation for curved edges
       const dx = n2.x - n1.x;
       const dy = n2.y - n1.y;
       const mx = (n1.x + n2.x) / 2;
@@ -1243,7 +1322,6 @@
         ctx.lineTo(targetX, targetY);
         ctx.stroke();
 
-        // Arrow head
         ctx.beginPath();
         ctx.moveTo(targetX, targetY);
         ctx.lineTo(targetX - headlen * Math.cos(angle - Math.PI / 6), targetY - headlen * Math.sin(angle - Math.PI / 6));
@@ -1251,7 +1329,6 @@
         ctx.fillStyle = n1.color;
         ctx.fill();
       } else {
-        // Curve to avoid mutual link overlap
         const mx = (n1.x + n2.x) / 2;
         const my = (n1.y + n2.y) / 2;
         const offset = 32;
@@ -1265,7 +1342,6 @@
         ctx.quadraticCurveTo(cx, cy, n2.x, n2.y);
         ctx.stroke();
 
-        // Arrow head at target
         const t = 0.88;
         const tipX = (1 - t) * (1 - t) * n1.x + 2 * (1 - t) * t * cx + t * t * n2.x;
         const tipY = (1 - t) * (1 - t) * n1.y + 2 * (1 - t) * t * cy + t * t * n2.y;
@@ -1329,7 +1405,7 @@
       }
       lastComputedG = G;
 
-      // Step 4: Analytical Steady-State via 40 Power Iteration Steps
+      // Step 4: Analytical Steady-State via Power Iteration
       let v = Array(n).fill(1.0 / n);
       for (let s = 0; s < 40; s++) {
         let vNext = Array(n).fill(0);
@@ -1404,7 +1480,7 @@
       });
     }
 
-    // Single-step Power Iteration button
+    // Power Iteration step button
     document.getElementById('btnStepIter').onclick = () => {
       if (lastComputedG.length === 0) return;
       const n = nodes.length;
@@ -1429,7 +1505,6 @@
         btn.innerText = '▶ Auto';
         btn.style.color = 'var(--text)';
       } else {
-        // Jiggle damping slightly or advance step
         iterStep = 0;
         currentV = Array(nodes.length).fill(1.0 / nodes.length);
         autoIterTimer = setInterval(() => {
@@ -1465,12 +1540,11 @@
     };
 
     // ============================================================== //
-    // 6. HALFTONE WORDMARK FOOTER (SPRING PHYSICS CANVAS ENGINE)     //
+    // 6. HALFTONE WORDMARK (DEDICATED STAGE DOWN IN FOOTER)          //
     // ============================================================== //
     (function initHalftoneFooter() {
-      const footer = document.getElementById('hwfFooter');
       const hCanvas = document.getElementById('hwfCanvas');
-      if (!footer || !hCanvas) return;
+      if (!hCanvas) return;
       const hCtx = hCanvas.getContext('2d');
       if (!hCtx) return;
 
@@ -1478,7 +1552,7 @@
       const dotGap = 7;
       const pushRadius = 90;
       const colors = {
-        background: '#070709',
+        background: '#040405',
         ink: [138, 180, 248],   // Google soft blue
         warm: [253, 214, 99]    // Google warm amber
       };
@@ -1489,12 +1563,11 @@
       let dots = new Float32Array(0); // [x, y, vx, vy, hx, hy, r]
       let count = 0;
       let grainTile = null;
-      let awake = true;
 
       function layoutHalftone() {
-        const rect = footer.getBoundingClientRect();
+        const rect = hCanvas.getBoundingClientRect();
         w = Math.max(1, Math.round(rect.width));
-        h = Math.max(220, Math.round(rect.height));
+        h = Math.max(200, Math.round(rect.height));
         dpr = Math.min(window.devicePixelRatio || 1, 2);
         hCanvas.width = Math.round(w * dpr);
         hCanvas.height = Math.round(h * dpr);
@@ -1513,6 +1586,7 @@
         m.font = `800 ${fontSize}px 'Inter', system-ui, sans-serif`;
         m.fillStyle = '#000';
         m.textBaseline = 'alphabetic';
+        // Position down toward the bottom of this dedicated stage
         m.fillText(wordmark, (w - m.measureText(wordmark).width) / 2, h * 0.88);
 
         const imgData = m.getImageData(0, 0, w, h).data;
@@ -1555,7 +1629,6 @@
           }
           gCtx.putImageData(gData, 0, 0);
         }
-        awake = true;
       }
 
       function drawHalftone(now) {
@@ -1565,7 +1638,6 @@
 
         const ringAge = shockRing.t < 0 ? 1e9 : now - shockRing.t;
         const ringR = ringAge * 0.85;
-        let isMoving = false;
 
         for (let i = 0; i < count; i++) {
           const idx = i * 7;
@@ -1606,9 +1678,7 @@
           x += vx;
           y += vy;
 
-          if (Math.abs(vx) + Math.abs(vy) > 0.02 || Math.hypot(x - hx, y - hy) > 0.04) {
-            isMoving = true;
-          } else {
+          if (Math.abs(vx) + Math.abs(vy) <= 0.02 && Math.hypot(x - hx, y - hy) <= 0.04) {
             x = hx; y = hy; vx = 0; vy = 0;
           }
 
@@ -1643,24 +1713,19 @@
           hCtx.globalCompositeOperation = 'source-over';
         }
 
-        awake = isMoving || ringAge < 850 || px > -1e4;
+        requestAnimationFrame(drawHalftone);
       }
 
-      function halftoneLoop(now) {
-        drawHalftone(now);
-        requestAnimationFrame(halftoneLoop);
-      }
-
-      // Pointer event tracking for footer
-      footer.addEventListener('pointermove', e => {
+      // Pointer event tracking attached directly to hCanvas
+      hCanvas.addEventListener('pointermove', e => {
         const b = hCanvas.getBoundingClientRect();
         px = e.clientX - b.left;
         py = e.clientY - b.top;
       });
-      footer.addEventListener('pointerleave', () => {
+      hCanvas.addEventListener('pointerleave', () => {
         px = -1e5; py = -1e5;
       });
-      footer.addEventListener('pointerdown', e => {
+      hCanvas.addEventListener('pointerdown', e => {
         const b = hCanvas.getBoundingClientRect();
         shockRing = { x: e.clientX - b.left, y: e.clientY - b.top, t: performance.now() };
       });
@@ -1668,7 +1733,7 @@
       window.addEventListener('resize', layoutHalftone);
       setTimeout(() => {
         layoutHalftone();
-        requestAnimationFrame(halftoneLoop);
+        requestAnimationFrame(drawHalftone);
       }, 150);
     })();
 
