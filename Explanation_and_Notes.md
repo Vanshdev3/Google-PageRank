@@ -1,5 +1,7 @@
 # Google PageRank: A Linear Algebra Application (Unit 2)
 
+> **Oral Presentation & Viva Cheatsheet:** See [STUDENT_PRESENTATION_CHEATSHEET.md](STUDENT_PRESENTATION_CHEATSHEET.md) for word-for-word scripts, slide walkthroughs, and examiner Q&A.
+
 ## 1. Project Background and History
 Before 1998, search engines like Yahoo! and AltaVista ranked websites based on **keyword density**. If you searched for "Cars", the search engine simply looked for the website that had the word "Cars" written the most times. 
 This was fundamentally flawed. Spammers realized they could just hide the word "Cars" invisibly on their page 10,000 times, and they would instantly rank #1.

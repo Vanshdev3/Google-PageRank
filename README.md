@@ -25,6 +25,7 @@ google-pagerank/
 |-- index.html                     Interactive web simulator (no dependencies)
 |-- HOW_TO_RUN.txt                 Quick terminal & execution guide
 |-- Explanation_and_Notes.md       Full mathematical walkthrough
+|-- STUDENT_PRESENTATION_CHEATSHEET.md Comprehensive student guide & viva cheatsheet
 |-- Presentation_Instructions.md  Demo guide for presenting
 |-- PageRank_Pro_Presentation.pptx Final slide deck
 |-- final_cover.png                Cover image used in the presentation
