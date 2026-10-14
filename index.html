@@ -858,18 +858,18 @@
     const PRESETS = {
       benchmark: {
         nodes: [
-          { id: 'Apple',  x: 160, y: 160, radius: 36, color: GOOGLE_PALETTE[0] },
-          { id: 'Bing',   x: 420, y: 160, radius: 36, color: GOOGLE_PALETTE[1] },
-          { id: 'CNN',    x: 420, y: 390, radius: 42, color: GOOGLE_PALETTE[2] },
-          { id: 'Disney', x: 160, y: 390, radius: 36, color: GOOGLE_PALETTE[3] }
+          { id: 'CNN',        x: 420, y: 160, radius: 44, color: GOOGLE_PALETTE[0] },
+          { id: 'Yahoo',      x: 160, y: 160, radius: 36, color: GOOGLE_PALETTE[1] },
+          { id: 'TechCrunch', x: 420, y: 390, radius: 36, color: GOOGLE_PALETTE[3] },
+          { id: 'Amazon',     x: 160, y: 390, radius: 32, color: GOOGLE_PALETTE[2] }
         ],
         edges: [
-          { from: 'Apple', to: 'Bing' },
-          { from: 'Apple', to: 'CNN' },
-          { from: 'Bing', to: 'CNN' },
-          { from: 'CNN', to: 'Apple' },
-          { from: 'CNN', to: 'Disney' },
-          { from: 'Disney', to: 'CNN' }
+          { from: 'CNN', to: 'Yahoo' },
+          { from: 'CNN', to: 'TechCrunch' },
+          { from: 'Yahoo', to: 'CNN' },
+          { from: 'TechCrunch', to: 'CNN' },
+          { from: 'TechCrunch', to: 'Amazon' },
+          { from: 'Amazon', to: 'CNN' }
         ]
       },
       spider_trap: {
