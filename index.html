@@ -614,35 +614,6 @@
       overflow: hidden;
     }
 
-    .hwf-stage-header {
-      position: absolute;
-      top: 16px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      z-index: 10;
-      pointer-events: none;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-    }
-
-    .hwf-badge {
-      background: rgba(253, 214, 99, 0.12);
-      color: var(--g-yellow);
-      border: 1px solid rgba(253, 214, 99, 0.3);
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: 600;
-    }
-    .hwf-stage-hint {
-      color: var(--text-dim);
-    }
-
     #hwfCanvas {
       width: 100%;
       height: 100%;
@@ -658,7 +629,6 @@
       header { flex-direction: column; align-items: flex-start; }
       .header-controls { flex-wrap: wrap; }
       .footer-top { grid-template-columns: 1fr; }
-      .hwf-stage-header { flex-direction: column; gap: 6px; }
     }
   </style>
 </head>
@@ -970,18 +940,37 @@
     }
     window.addEventListener('resize', resizeGraphCanvas);
 
-    // Helper: Find node at point
-    function getNodeAt(x, y) {
-      return nodes.find(n => {
-        const r = (n.currentDynamicRadius || n.radius || 36) + 12;
-        return Math.hypot(n.x - x, n.y - y) <= r;
-      });
+    // Precise Coordinate Converter (Compensates for DPI / CSS Zoom)
+    function getCanvasMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
     }
 
-    // --- 3. GRAPH INTERACTION HANDLING (ROBUST LINKING) ---
+    // Accurate Node Picker with generous hit radius
+    function getNodeAt(x, y) {
+      let closest = null;
+      let minDist = Infinity;
+      nodes.forEach(n => {
+        const r = (n.currentDynamicRadius || n.radius || 36) + 14;
+        const d = Math.hypot(n.x - x, n.y - y);
+        if (d <= r && d < minDist) {
+          minDist = d;
+          closest = n;
+        }
+      });
+      return closest;
+    }
+
+    // --- 3. GRAPH INTERACTION HANDLING (GLITCH-FREE LINKING) ---
     let draggedNode = null;
-    let selectedSourceNode = null; // Stores first clicked node in ADD_EDGE mode
-    let isMouseDown = false;
+    let selectedSourceNode = null; // Currently highlighted source node in ADD_EDGE
+    let dragStartPos = null;
+    let suppressClick = false;
     let mousePos = { x: 0, y: 0 };
 
     document.getElementById('btnDrag').onclick = () => setMode('DRAG');
@@ -1015,7 +1004,7 @@
         canvas.style.cursor = 'crosshair';
       } else if (mode === 'ADD_EDGE') {
         document.getElementById('btnAddEdge').classList.add('active');
-        hintEl.innerText = "Mode: Click source page, then click target page to link them (or drag between them).";
+        hintEl.innerText = "Mode: Click first node (Source), then click second node (Destination) to link.";
         canvas.style.cursor = 'pointer';
       } else if (mode === 'DELETE') {
         document.getElementById('btnDelete').classList.add('active');
@@ -1046,13 +1035,11 @@
       calculateMath();
     }
 
-    // --- MOUSE & TOUCH EVENT LISTENERS ---
+    // --- MOUSE EVENT LISTENERS (ROBUST STATE MACHINE) ---
     canvas.addEventListener('mousedown', e => {
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-      isMouseDown = true;
-      const clicked = getNodeAt(mx, my);
+      const pos = getCanvasMousePos(e);
+      dragStartPos = pos;
+      const clicked = getNodeAt(pos.x, pos.y);
 
       if (mode === 'DRAG') {
         if (clicked) {
@@ -1064,7 +1051,7 @@
           const name = String.fromCharCode(nextNodeChar++);
           nodes.push({
             id: 'Page ' + name,
-            x: mx, y: my, radius: 34,
+            x: pos.x, y: pos.y, radius: 34,
             color: GOOGLE_PALETTE[nodes.length % GOOGLE_PALETTE.length]
           });
           calculateMath();
@@ -1079,13 +1066,52 @@
       }
     });
 
+    window.addEventListener('mousemove', e => {
+      const pos = getCanvasMousePos(e);
+      mousePos = pos;
+
+      if (mode === 'DRAG' && draggedNode) {
+        draggedNode.x = Math.max(45, Math.min(canvas.width - 45, pos.x));
+        draggedNode.y = Math.max(45, Math.min(canvas.height - 45, pos.y));
+      }
+    });
+
+    window.addEventListener('mouseup', e => {
+      if (mode === 'DRAG') {
+        draggedNode = null;
+        if (canvas.style.cursor === 'grabbing') canvas.style.cursor = 'grab';
+      } else if (mode === 'ADD_EDGE' && selectedSourceNode && dragStartPos) {
+        const pos = getCanvasMousePos(e);
+        const dragDist = Math.hypot(pos.x - dragStartPos.x, pos.y - dragStartPos.y);
+
+        // If the user intentionally dragged more than 20px, process as drag-to-connect
+        if (dragDist > 20) {
+          const target = getNodeAt(pos.x, pos.y);
+          if (target && target !== selectedSourceNode) {
+            const exists = edges.some(ed => ed.from === selectedSourceNode.id && ed.to === target.id);
+            if (!exists) {
+              edges.push({ from: selectedSourceNode.id, to: target.id });
+              calculateMath();
+              document.getElementById('canvasInstructions').innerText = 
+                `✓ Connected [${selectedSourceNode.id} → ${target.id}]!`;
+            } else {
+              document.getElementById('canvasInstructions').innerText = 
+                `Link [${selectedSourceNode.id} → ${target.id}] already exists!`;
+            }
+          }
+          selectedSourceNode = null;
+          suppressClick = true;
+          setTimeout(() => { suppressClick = false; }, 150);
+        }
+      }
+      dragStartPos = null;
+    });
+
     // Dedicated Click Handler for Link Node (Click-to-Click)
     canvas.addEventListener('click', e => {
-      if (mode !== 'ADD_EDGE') return;
-      const rect = canvas.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const my = e.clientY - rect.top;
-      const clicked = getNodeAt(mx, my);
+      if (mode !== 'ADD_EDGE' || suppressClick) return;
+      const pos = getCanvasMousePos(e);
+      const clicked = getNodeAt(pos.x, pos.y);
       const hintEl = document.getElementById('canvasInstructions');
 
       if (!clicked) {
@@ -1112,44 +1138,11 @@
           } else {
             hintEl.innerText = `Link [${selectedSourceNode.id} → ${clicked.id}] already exists!`;
           }
-        } else {
-          hintEl.innerText = `Deselected [${clicked.id}].`;
-        }
-        selectedSourceNode = null;
-      }
-    });
-
-    window.addEventListener('mousemove', e => {
-      const rect = canvas.getBoundingClientRect();
-      mousePos.x = e.clientX - rect.left;
-      mousePos.y = e.clientY - rect.top;
-
-      if (mode === 'DRAG' && draggedNode) {
-        draggedNode.x = Math.max(45, Math.min(canvas.width - 45, mousePos.x));
-        draggedNode.y = Math.max(45, Math.min(canvas.height - 45, mousePos.y));
-      }
-    });
-
-    window.addEventListener('mouseup', e => {
-      isMouseDown = false;
-      if (mode === 'DRAG') {
-        draggedNode = null;
-        if (canvas.style.cursor === 'grabbing') canvas.style.cursor = 'grab';
-      } else if (mode === 'ADD_EDGE') {
-        // Drag-and-release support
-        const rect = canvas.getBoundingClientRect();
-        const mx = e.clientX - rect.left;
-        const my = e.clientY - rect.top;
-        const targetNode = getNodeAt(mx, my);
-
-        if (selectedSourceNode && targetNode && targetNode !== selectedSourceNode) {
-          const exists = edges.some(ed => ed.from === selectedSourceNode.id && ed.to === targetNode.id);
-          if (!exists) {
-            edges.push({ from: selectedSourceNode.id, to: targetNode.id });
-            calculateMath();
-            document.getElementById('canvasInstructions').innerText = `✓ Created link: [${selectedSourceNode.id} → ${targetNode.id}]!`;
-          }
           selectedSourceNode = null;
+        } else {
+          // Clicked source node again: cancel selection
+          selectedSourceNode = null;
+          hintEl.innerText = `Deselected [${clicked.id}].`;
         }
       }
     });
@@ -1171,16 +1164,25 @@
         }
       });
 
-      // Draw Pending Edge (in ADD_EDGE mode when source is selected)
+      // Draw Dynamic Guidance Arrow (in ADD_EDGE mode when source is selected)
       if (mode === 'ADD_EDGE' && selectedSourceNode) {
+        const hoverNode = getNodeAt(mousePos.x, mousePos.y);
+        const isHoveringTarget = hoverNode && hoverNode !== selectedSourceNode;
+
         ctx.beginPath();
         ctx.moveTo(selectedSourceNode.x, selectedSourceNode.y);
         ctx.lineTo(mousePos.x, mousePos.y);
-        ctx.strokeStyle = '#FDD663';
+        ctx.strokeStyle = isHoveringTarget ? '#81C995' : '#FDD663';
         ctx.lineWidth = 3;
         ctx.setLineDash([8, 6]);
         ctx.stroke();
         ctx.setLineDash([]);
+
+        // Interactive cursor label
+        ctx.fillStyle = isHoveringTarget ? '#81C995' : '#FDD663';
+        ctx.font = '600 11px "Inter", sans-serif';
+        const guideMsg = isHoveringTarget ? `Connect to ${hoverNode.id} ↗` : `From ${selectedSourceNode.id}...`;
+        ctx.fillText(guideMsg, mousePos.x + 16, mousePos.y - 10);
       }
 
       // Update and Draw Surfer Flow Particles
@@ -1536,7 +1538,7 @@
     };
 
     // ============================================================== //
-    // 6. HALFTONE WORDMARK (DEDICATED STAGE DOWN IN FOOTER)          //
+    // 6. HALFTONE WORDMARK (MATCHING GOOGLE 4-COLOR PALETTE)         //
     // ============================================================== //
     (function initHalftoneFooter() {
       const hCanvas = document.getElementById('hwfCanvas');
@@ -1546,17 +1548,25 @@
 
       const wordmark = "PAGERANK";
       const dotGap = 7;
-      const pushRadius = 90;
-      const colors = {
-        background: '#040405',
-        ink: [138, 180, 248],   // Google soft blue
-        warm: [253, 214, 99]    // Google warm amber
-      };
+      const pushRadius = 95;
+
+      // Authentic Google 4-Color Sequence matching PageRank at top
+      const letterColorMap = [
+        { char: 'P', color: [138, 180, 248] }, // Google Blue  (#8AB4F8)
+        { char: 'A', color: [242, 139, 130] }, // Google Red   (#F28B82)
+        { char: 'G', color: [253, 214, 99]  }, // Google Yellow(#FDD663)
+        { char: 'E', color: [138, 180, 248] }, // Google Blue  (#8AB4F8)
+        { char: 'R', color: [129, 201, 149] }, // Google Green (#81C995)
+        { char: 'A', color: [242, 139, 130] }, // Google Red   (#F28B82)
+        { char: 'N', color: [138, 180, 248] }, // Google Blue  (#8AB4F8)
+        { char: 'K', color: [129, 201, 149] }  // Google Green (#81C995)
+      ];
 
       let w = 0, h = 0, dpr = 1;
       let px = -1e5, py = -1e5;
       let shockRing = { x: 0, y: 0, t: -1 };
-      let dots = new Float32Array(0); // [x, y, vx, vy, hx, hy, r]
+      // Dot format: [x, y, vx, vy, hx, hy, radius, baseR, baseG, baseB]
+      let dots = new Float32Array(0);
       let count = 0;
       let grainTile = null;
 
@@ -1568,7 +1578,7 @@
         hCanvas.width = Math.round(w * dpr);
         hCanvas.height = Math.round(h * dpr);
 
-        // Offscreen mask to sample text density
+        // Offscreen mask to sample text letter colors and density
         const mask = document.createElement('canvas');
         mask.width = w;
         mask.height = h;
@@ -1580,10 +1590,19 @@
         const measured = m.measureText(wordmark).width;
         const fontSize = (w * 0.94 / measured) * 100;
         m.font = `800 ${fontSize}px 'Inter', system-ui, sans-serif`;
-        m.fillStyle = '#000';
         m.textBaseline = 'alphabetic';
-        // Position down toward the bottom of this dedicated stage
-        m.fillText(wordmark, (w - m.measureText(wordmark).width) / 2, h * 0.88);
+
+        // Draw each letter in its specific Google color
+        const totalScaledWidth = m.measureText(wordmark).width;
+        let curX = (w - totalScaledWidth) / 2;
+        const textY = h * 0.88;
+
+        for (let i = 0; i < letterColorMap.length; i++) {
+          const item = letterColorMap[i];
+          m.fillStyle = `rgb(${item.color[0]}, ${item.color[1]}, ${item.color[2]})`;
+          m.fillText(item.char, curX, textY);
+          curX += m.measureText(item.char).width;
+        }
 
         const imgData = m.getImageData(0, 0, w, h).data;
         const cols = Math.ceil(w / dotGap);
@@ -1592,25 +1611,42 @@
 
         for (let gy = 0; gy < rows; gy++) {
           for (let gx = 0; gx < cols; gx++) {
-            let sum = 0;
+            let sumAlpha = 0;
+            let sumR = 0, sumG = 0, sumB = 0;
+            let hits = 0;
+
             for (let sy = 0; sy < 3; sy++) {
               for (let sx = 0; sx < 3; sx++) {
                 const sampleX = Math.min(w - 1, Math.floor(gx * dotGap + ((sx + 0.5) * dotGap) / 3));
                 const sampleY = Math.min(h - 1, Math.floor(gy * dotGap + ((sy + 0.5) * dotGap) / 3));
-                sum += imgData[(sampleY * w + sampleX) * 4 + 3];
+                const pIdx = (sampleY * w + sampleX) * 4;
+                const a = imgData[pIdx + 3];
+                sumAlpha += a;
+                if (a > 30) {
+                  sumR += imgData[pIdx + 0];
+                  sumG += imgData[pIdx + 1];
+                  sumB += imgData[pIdx + 2];
+                  hits++;
+                }
               }
             }
-            const coverage = sum / (9 * 255);
-            if (coverage < 0.05) continue;
+
+            const coverage = sumAlpha / (9 * 255);
+            if (coverage < 0.05 || hits === 0) continue;
 
             const hx = gx * dotGap + dotGap / 2;
             const hy = gy * dotGap + dotGap / 2;
             const r = Math.sqrt(coverage) * dotGap * 0.54;
-            temp.push(hx, hy, 0, 0, hx, hy, r);
+            const baseR = Math.round(sumR / hits);
+            const baseG = Math.round(sumG / hits);
+            const baseB = Math.round(sumB / hits);
+
+            // Push 10 elements per dot
+            temp.push(hx, hy, 0, 0, hx, hy, r, baseR, baseG, baseB);
           }
         }
         dots = new Float32Array(temp);
-        count = temp.length / 7;
+        count = temp.length / 10;
 
         // Build procedural grain tile
         grainTile = document.createElement('canvas');
@@ -1629,20 +1665,24 @@
 
       function drawHalftone(now) {
         hCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        hCtx.fillStyle = colors.background;
+        hCtx.fillStyle = '#040405';
         hCtx.fillRect(0, 0, w, h);
 
         const ringAge = shockRing.t < 0 ? 1e9 : now - shockRing.t;
         const ringR = ringAge * 0.85;
 
         for (let i = 0; i < count; i++) {
-          const idx = i * 7;
+          const idx = i * 10;
           let x = dots[idx];
           let y = dots[idx + 1];
           let vx = dots[idx + 2];
           let vy = dots[idx + 3];
           const hx = dots[idx + 4];
           const hy = dots[idx + 5];
+          const r = dots[idx + 6];
+          const baseR = dots[idx + 7];
+          const baseG = dots[idx + 8];
+          const baseB = dots[idx + 9];
 
           // Shockwave ripple effect
           if (ringAge < 850) {
@@ -1683,16 +1723,16 @@
           dots[idx + 2] = vx;
           dots[idx + 3] = vy;
 
-          // Color warmth interpolation
+          // Thermal color warming when displaced
           const disp = Math.hypot(x - hx, y - hy);
-          const k = Math.min(1, disp / 24);
-          const cr = Math.round(colors.ink[0] + (colors.warm[0] - colors.ink[0]) * k);
-          const cg = Math.round(colors.ink[1] + (colors.warm[1] - colors.ink[1]) * k);
-          const cb = Math.round(colors.ink[2] + (colors.warm[2] - colors.ink[2]) * k);
+          const k = Math.min(1, disp / 26);
+          const cr = Math.round(baseR + (255 - baseR) * k * 0.85);
+          const cg = Math.round(baseG + (240 - baseG) * k * 0.85);
+          const cb = Math.round(baseB + (200 - baseB) * k * 0.85);
 
           hCtx.fillStyle = `rgb(${cr}, ${cg}, ${cb})`;
           hCtx.beginPath();
-          hCtx.arc(x, y, dots[idx + 6], 0, Math.PI * 2);
+          hCtx.arc(x, y, r, 0, Math.PI * 2);
           hCtx.fill();
         }
 
